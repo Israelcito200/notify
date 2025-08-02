@@ -1,25 +1,39 @@
-name: Enviar frase diaria
+name: Ejecutar frase cada hora
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # Todos los días a las 08:00 UTC
-  workflow_dispatch:
+    - cron: '0 * * * *'  # Cada hora
+  workflow_dispatch:      # Permite ejecutarlo manualmente
 
 jobs:
-  ejecutar_script:
+  enviar-frase:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: DvCGxub8@
+          MYSQL_DATABASE: pruebas
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
-      - name: 📁 Clonar el repositorio
+      - name: 📁 Checkout del repositorio
         uses: actions/checkout@v3
 
-      - name: 🔧 Configurar PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'  # Ajusta a tu versión preferida
+      - name: 🐘 Instalar PHP y extensiones
+        run: |
+          sudo apt update
+          sudo apt install -y php php-mysql
 
-      - name: 🚀 Ejecutar script PHP
+      - name: 🛜 Esperar a que MySQL esté disponible
+        run: sleep 20
+
+      - name: 🚀 Ejecutar enviar_frase.php
         run: php enviar_frase.php
-        env:
-          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
-          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
