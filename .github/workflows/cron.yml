@@ -1,27 +1,13 @@
-name: Ejecutar frase cada hora
+name: Frase automática cada hora
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Cada hora
-  workflow_dispatch:      # Permite ejecutarlo manualmente
+    - cron: '0 * * * *'  # Cada hora UTC
+  workflow_dispatch:
 
 jobs:
-  enviar-frase:
+  publicar-frase:
     runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: DvCGxub8@
-          MYSQL_DATABASE: pruebas
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
 
     steps:
       - name: 📁 Checkout del repositorio
@@ -32,8 +18,13 @@ jobs:
           sudo apt update
           sudo apt install -y php php-mysql
 
-      - name: 🛜 Esperar a que MySQL esté disponible
-        run: sleep 20
-
       - name: 🚀 Ejecutar enviar_frase.php
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
         run: php enviar_frase.php
