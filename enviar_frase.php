@@ -9,8 +9,8 @@ if (!$frase) {
 }
 
 $data = [
-  'token'   => 'abzbpkojey8i1tp95vdqzv2fcorusw',
-  'user'    => 'ucdsh2yr69mraf6xd7pm9aqrkx3ogw',
+  $pushoverToken = getenv('PUSHOVER_TOKEN'),
+  $pushoverUser = getenv('PUSHOVER_USER'),
   'message' => $frase,
   'title'   => '✨ Frase del día ✨',
   'sound'   => 'spacealarm', // Puedes probar otros como 'spacealarm' o 'tugboat'
@@ -28,3 +28,4 @@ $context = stream_context_create($options);
 $result = file_get_contents('https://api.pushover.net/1/messages.json', false, $context);
 echo $result;
 ?>
+
