@@ -9,7 +9,7 @@ try {
   );
   $db->exec("SET NAMES 'utf8mb4'");
 
-  $stmt = $db->query("SELECT * FROM frases WHERE publicada = 0 ORDER BY RAND() LIMIT 1");
+  $stmt = $db->query("SELECT * FROM frases ORDER BY RAND() LIMIT 1");
   $frase = $stmt->fetch(PDO::FETCH_ASSOC);
 
   if (!$frase) {
@@ -44,3 +44,4 @@ try {
   echo "❌ Error de conexión: " . $e->getMessage();
   exit(1);
 }
+
